@@ -7,13 +7,13 @@ import java.time.LocalDate;
 
 public abstract class Conta {
 
-    private Integer numero;
+    private final Integer numero;
 
     private BigDecimal saldo;
 
-    private LocalDate dataCriacao;
+    private final LocalDate dataCriacao;
 
-    private Cliente cliente;
+    private final Cliente cliente;
 
     public Integer getNumero() {
         return numero;
@@ -31,12 +31,13 @@ public abstract class Conta {
         return dataCriacao;
     }
 
-    public Conta(Integer numero, Cliente cliente) {
-        this.numero = numero;
+    public Conta(Cliente cliente)  {
+        this.numero = BancoDadosService.getNumeroConta();
         saldo = BigDecimal.ZERO;
         dataCriacao = LocalDate.now();
         this.cliente = cliente;
-        BancoDadosService.incluir(this);
+        this.cliente.setConta(this);
+        BancoDadosService.incluirConta(this);
     }
 
     @Override

@@ -5,7 +5,6 @@ import enums.StatusEnum;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class Cliente {
 
@@ -15,21 +14,13 @@ public abstract class Cliente {
 
     private StatusEnum status;
 
-    private List<Conta> contaList = new ArrayList<>();
+    private final List<Conta> contaList = new ArrayList<>();
 
-    public Cliente(String nome, Integer numeroContaCorrente) {
+    public Cliente(String nome) {
         this.nome = nome;
         dataCadastro = LocalDate.now();
         status = StatusEnum.ATIVO;
-        contaList.add(new ContaCorrente(numeroContaCorrente, this));
-    }
-
-    public Conta getContaByNumero(Integer numeroConta){
-        Optional<Conta> contaOrigem = getContaList().stream().filter(conta -> conta.getNumero().equals(numeroConta)).findFirst();
-        if(contaOrigem.isEmpty()){
-            return null;
-        }
-        return contaOrigem.get();
+        new ContaCorrente(this);
     }
 
     public Cliente(){}
@@ -71,4 +62,6 @@ public abstract class Cliente {
                 ", contaList=" + contaList +
                 '}';
     }
+
+
 }

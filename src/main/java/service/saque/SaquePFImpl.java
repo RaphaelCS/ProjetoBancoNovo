@@ -1,7 +1,7 @@
 package service.saque;
 
-import exception.SistemaException;
-import model.Cliente;
+import exception.SaldoInsuficienteException;
+import exception.ValorInvalidoException;
 import model.ClientePF;
 import model.Conta;
 
@@ -11,11 +11,13 @@ public interface SaquePFImpl<T extends Conta> extends Saque<ClientePF, T>{
 
 
     @Override
-    default void sacar(ClientePF cliente, T conta, BigDecimal valor) throws SistemaException {
-        if(valor.compareTo(BigDecimal.ZERO)==1 && conta.getSaldo().compareTo(valor)>=0){
-            conta.setSaldo(conta.getSaldo().subtract(valor));
-        }else{
-            throw new SistemaException("Valor deve ser maior que zero ou saldo insufuciente!");
+    default void sacar(ClientePF cliente, T conta, BigDecimal valor) throws ValorInvalidoException, SaldoInsuficienteException {
+        if(valor.compareTo(BigDecimal.ZERO)<1) {
+            throw new ValorInvalidoException();
         }
+        if(conta.getSaldo().compareTo(valor)<0) {
+            throw new SaldoInsuficienteException();
+        }
+        conta.setSaldo(conta.getSaldo().subtract(valor));
     }
 }

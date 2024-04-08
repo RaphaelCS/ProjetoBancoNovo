@@ -1,16 +1,15 @@
 package service.deposito;
 
-import exception.SistemaException;
+import exception.ValorInvalidoException;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ContaCorrentePFService;
 import service.ContaCorrentePJService;
-import service.investimento.InvestirPFImpl;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DepositoContaCorrenteTest {
 
@@ -28,11 +27,11 @@ class DepositoContaCorrenteTest {
 
     @BeforeEach
     void massa(){
-        clientePF = new ClientePF("Raphael", 1,"111");
+        clientePF = new ClientePF("Raphael", "111");
         contaPF = clientePF.getContaList().get(0);
         contaCorrentePFService = new ContaCorrentePFService();
 
-        clientePJ = new ClientePJ("Caixa", 2,"111");
+        clientePJ = new ClientePJ("Caixa", "111");
         contaPJ = clientePJ.getContaList().get(0);
         contaCorrentePJService = new ContaCorrentePJService();
     }
@@ -42,8 +41,8 @@ class DepositoContaCorrenteTest {
         try{
             contaCorrentePFService.depositar((ContaCorrente) contaPF, BigDecimal.valueOf(1000));
             assertEquals(BigDecimal.valueOf(1000),contaPF.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
 
     }
@@ -53,8 +52,8 @@ class DepositoContaCorrenteTest {
         try{
             contaCorrentePFService.depositar((ContaCorrente) contaPF, BigDecimal.valueOf(0));
             assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
 
     }
@@ -64,8 +63,8 @@ class DepositoContaCorrenteTest {
         try {
             contaCorrentePFService.depositar((ContaCorrente) contaPF, BigDecimal.valueOf(-100));
             assertEquals(BigDecimal.valueOf(0), contaPF.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -74,8 +73,8 @@ class DepositoContaCorrenteTest {
         try{
             contaCorrentePJService.depositar((ContaCorrente) contaPJ, BigDecimal.valueOf(1000));
             assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -84,8 +83,8 @@ class DepositoContaCorrenteTest {
         try{
             contaCorrentePJService.depositar((ContaCorrente) contaPJ, BigDecimal.valueOf(0));
             assertEquals(BigDecimal.valueOf(0),contaPJ.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -95,8 +94,8 @@ class DepositoContaCorrenteTest {
         try{
             contaCorrentePJService.depositar((ContaCorrente) contaPJ, BigDecimal.valueOf(-100));
             assertEquals(BigDecimal.valueOf(0),contaPJ.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 

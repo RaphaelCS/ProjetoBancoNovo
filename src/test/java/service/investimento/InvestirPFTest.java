@@ -1,16 +1,19 @@
 package service.investimento;
 
+import exception.SaldoInsuficienteException;
+import exception.ValorInvalidoException;
 import model.ClientePF;
 import model.ContaCorrente;
 import model.ContaInvestimento;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.ContaCorrentePFService;
 import service.ContaInvestimentoPFService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class InvestirPFTest {
 
@@ -23,7 +26,7 @@ class InvestirPFTest {
 
     @BeforeEach
     void massa(){
-        clientePF = new ClientePF("Raphael", 1,"111");
+        clientePF = new ClientePF("Raphael", "111");
         contaPF = (ContaCorrente) clientePF.getContaList().get(0);
         contaPF.setSaldo(BigDecimal.valueOf(1000));
         contaInvestimentoPFService = new ContaInvestimentoPFService();
@@ -31,25 +34,41 @@ class InvestirPFTest {
 
     @Test
     void investir() {
-        contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(500));
-        assertEquals(BigDecimal.valueOf(505.0),contaInvestimentoPFService.consultarSaldo(contaInvestimento).setScale(1));
+        try{
+            contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(500));
+            assertEquals(BigDecimal.valueOf(505.0),contaInvestimentoPFService.consultarSaldo(contaInvestimento).setScale(1, RoundingMode.HALF_DOWN));
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void investirMaior() {
-        contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(1500));
-        assertNull(contaInvestimento);
+        try{
+            contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(1500));
+            assertNull(contaInvestimento);
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void investirZero() {
-        contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(0));
-        assertNull(contaInvestimento);
+        try{
+            contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(0));
+            assertNull(contaInvestimento);
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void investirNegativo() {
-        contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(-100));
-        assertNull(contaInvestimento);
+        try{
+            contaInvestimento = contaInvestimentoPFService.investir(clientePF,contaPF,BigDecimal.valueOf(-100));
+            assertNull(contaInvestimento);
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 }

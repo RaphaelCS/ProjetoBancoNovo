@@ -1,6 +1,6 @@
 package service.deposito;
 
-import exception.SistemaException;
+import exception.ValorInvalidoException;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,8 @@ class DepositoContaPoupancaTest {
 
     @BeforeEach
     void massa(){
-        clientePF = new ClientePF("Raphael", 1,"111");
-        contaPF = new ContaPoupanca(1, (ClientePF) clientePF);
+        clientePF = new ClientePF("Raphael", "111");
+        contaPF = new ContaPoupanca((ClientePF) clientePF);
         contaPoupancaService = new ContaPoupancaService();
     }
 
@@ -30,8 +30,8 @@ class DepositoContaPoupancaTest {
         try{
             contaPoupancaService.depositar((ContaPoupanca) contaPF, BigDecimal.valueOf(1000));
             assertEquals(BigDecimal.valueOf(1000),contaPF.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -40,8 +40,8 @@ class DepositoContaPoupancaTest {
         try{
             contaPoupancaService.depositar((ContaPoupanca) contaPF, BigDecimal.valueOf(0));
             assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -50,8 +50,8 @@ class DepositoContaPoupancaTest {
         try{
             contaPoupancaService.depositar((ContaPoupanca) contaPF, BigDecimal.valueOf(-100));
             assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
-        }catch (SistemaException e){
-            e.printStackTrace();
+        }catch (ValorInvalidoException e){
+            System.out.println(e.getMessage());
         }
     }
 }

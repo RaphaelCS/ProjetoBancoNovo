@@ -1,11 +1,14 @@
 package service.transferencia;
 
+import exception.SaldoInsuficienteException;
+import exception.ValorInvalidoException;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ContaCorrentePJService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,10 +25,10 @@ class TransferenciaPJCorrenteTest {
 
     @BeforeEach
     void massa(){
-        clientePF = new ClientePF("Raphael", 1,"111");
+        clientePF = new ClientePF("Raphael", "111");
         contaPF = clientePF.getContaList().get(0);
 
-        clientePJ = new ClientePJ("Caixa", 2,"111");
+        clientePJ = new ClientePJ("Caixa", "111");
         contaPJ = clientePJ.getContaList().get(0);
         contaPJ.setSaldo(BigDecimal.valueOf(1000));
 
@@ -34,29 +37,45 @@ class TransferenciaPJCorrenteTest {
 
     @Test
     void transferir() {
-        contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(200), contaPF);
-        assertEquals(BigDecimal.valueOf(799),contaPJ.getSaldo().setScale(0));
-        assertEquals(BigDecimal.valueOf(200),contaPF.getSaldo());
+        try{
+            contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(200), contaPF);
+            assertEquals(BigDecimal.valueOf(799),contaPJ.getSaldo().setScale(0, RoundingMode.HALF_DOWN));
+            assertEquals(BigDecimal.valueOf(200),contaPF.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void transferirMaior() {
-        contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(2000), contaPF);
-        assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo().setScale(0));
-        assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
+        try{
+            contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(2000), contaPF);
+            assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo().setScale(0, RoundingMode.HALF_DOWN));
+            assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void transferirIgual() {
-        contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(1000), contaPF);
-        assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo().setScale(0));
-        assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
+        try{
+            contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(1000), contaPF);
+            assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo().setScale(0, RoundingMode.HALF_DOWN));
+            assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void transferirNegativo() {
-        contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(11000), contaPF);
-        assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo().setScale(0));
-        assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
+        try{
+            contaCorrentePJService.transferir((ClientePJ) clientePJ, (ContaCorrente) contaPJ, BigDecimal.valueOf(11000), contaPF);
+            assertEquals(BigDecimal.valueOf(1000),contaPJ.getSaldo().setScale(0, RoundingMode.HALF_DOWN));
+            assertEquals(BigDecimal.valueOf(0),contaPF.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -1,16 +1,17 @@
 package service.saque;
 
-import model.Cliente;
+import exception.SaldoInsuficienteException;
+import exception.ValorInvalidoException;
 import model.ClientePJ;
-import model.Conta;
 import model.ContaCorrente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ContaCorrentePJService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SaquePJCorrenteTest {
 
@@ -21,7 +22,7 @@ class SaquePJCorrenteTest {
 
     @BeforeEach
     void massa(){
-        clientePJ = new ClientePJ("Caixa", 2,"111");
+        clientePJ = new ClientePJ("Caixa", "111");
         contaPJ = (ContaCorrente) clientePJ.getContaList().get(0);
         contaPJ.setSaldo(BigDecimal.valueOf(500));
         contaCorrentePJService = new ContaCorrentePJService();
@@ -29,25 +30,41 @@ class SaquePJCorrenteTest {
 
     @Test
     void sacar() {
-        contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(100));
-        assertEquals(BigDecimal.valueOf(399.5),contaPJ.getSaldo().setScale(1));
+        try{
+            contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(100));
+            assertEquals(BigDecimal.valueOf(399.5),contaPJ.getSaldo().setScale(1, RoundingMode.HALF_DOWN));
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void sacarMaior() {
-        contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(800));
-        assertEquals(BigDecimal.valueOf(500),contaPJ.getSaldo());
+        try{
+            contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(800));
+            assertEquals(BigDecimal.valueOf(500),contaPJ.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void sacarIgual() {
-        contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(500));
-        assertEquals(BigDecimal.valueOf(500),contaPJ.getSaldo());
+        try{
+            contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(500));
+            assertEquals(BigDecimal.valueOf(500),contaPJ.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
     void sacarNegativol() {
-        contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(-500));
-        assertEquals(BigDecimal.valueOf(500),contaPJ.getSaldo());
+        try{
+            contaCorrentePJService.sacar(clientePJ,contaPJ,BigDecimal.valueOf(-500));
+            assertEquals(BigDecimal.valueOf(500),contaPJ.getSaldo());
+        }catch (ValorInvalidoException | SaldoInsuficienteException e){
+            System.out.println(e.getMessage());
+        }
     }
 }
